@@ -18,9 +18,7 @@ First of all install the ssh server (package openssh-server) in the VM. Then fol
 ```bash
 C:\Users\bc24u_000\Sistemas>ssh -p 3022 juanrh@localhost
 The authenticity of host '[localhost]:3022 ([127.0.0.1]:3022)' can't be established.
-RSA key fingerprint is 9e:f2:af:6b:75:68:18:0b:93:ab:fd:c2:24:cb:e1:d8.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '[localhost]:3022' (RSA) to the list of known hosts.
+...
 juanrh@localhost's password:
 Welcome to Ubuntu 14.10 (GNU/Linux 3.16.0-33-generic x86_64)
 ```
