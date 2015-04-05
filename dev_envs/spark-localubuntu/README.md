@@ -47,6 +47,19 @@ for Scala 2.11) which is the last version of the plugin for Scala 2.10. This wor
 code because the runtime is Scala 2.11. In project properties -> Scala Compiler select "use project settings" and "Scala Installation" to
 "Fixed Scala Installation: 2.10.4 (built-in)" 
 
+### Configure Eclipse for Sun Java 7 
+In Ubuntu, after installing the sun JDK with the corresponding task of the fabfile in this directory we have to modify eclipse.ini as indicated [here](https://wiki.eclipse.org/Eclipse.ini) in order to use that JDK. For that we use `-vm`, that needs to occour before `-vmargs`, for example:
+
+```bash
+....
+--launcher.appendVmargs
+-vm 
+/opt/java7/jdk1.7.0_75/bin/java
+-vmargs
+-Dosgi.requiredJavaVersion=1.6
+...
+```
+
 ## Kafka maintenance for development in local mode
 
 ### Deleting a Kafka topic
