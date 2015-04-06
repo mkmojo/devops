@@ -2,10 +2,15 @@
 
 ZK_START_SCRIPT="/opt/zookeeper/zookeeper*/bin/zkServer.sh"
 KAFKA_ROOT="/opt/kafka/kafka*"
+# Confluent 1.0 schema registry is compatible with Kafka 0.8.1.1
+CONFLUENT_ROOT="/opt/confluent/confluent*"
 
 function start_kafka {
     echo "Starting Kafka"
     $KAFKA_ROOT/bin/kafka-server-start.sh $KAFKA_ROOT/config/server.properties &> /dev/null &
+
+    echo "Starting Kafka schema registry"
+    $CONFLUENT_ROOT/bin/schema-registry-start $CONFLUENT_ROOT/etc/schema-registry/schema-registry.properties &> /dev/null &
 }
 
 function start_zoookeeper {
@@ -24,6 +29,9 @@ function set_kafka_broker_pid {
 }
 
 function stop_kafka {
+    echo "Stopping Kafka schema registry"
+    $CONFLUENT_ROOT/bin/schema-registry-stop
+
     echo "Stopping Kafka"
     $KAFKA_ROOT/bin/kafka-server-stop.sh
     sleep 1
