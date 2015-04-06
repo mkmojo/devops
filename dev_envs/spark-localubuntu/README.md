@@ -18,9 +18,7 @@ First of all install the ssh server (package openssh-server) in the VM. Then fol
 ```bash
 C:\Users\bc24u_000\Sistemas>ssh -p 3022 juanrh@localhost
 The authenticity of host '[localhost]:3022 ([127.0.0.1]:3022)' can't be established.
-RSA key fingerprint is 9e:f2:af:6b:75:68:18:0b:93:ab:fd:c2:24:cb:e1:d8.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '[localhost]:3022' (RSA) to the list of known hosts.
+...
 juanrh@localhost's password:
 Welcome to Ubuntu 14.10 (GNU/Linux 3.16.0-33-generic x86_64)
 ```
@@ -48,6 +46,19 @@ for Scala 2.11) which is the last version of the plugin for Scala 2.10. This wor
 - FIX for Scala IDE 4: this is not needed for Scala IDE 3.0.3, but for Scala IDE 4 we cannot execute the
 code because the runtime is Scala 2.11. In project properties -> Scala Compiler select "use project settings" and "Scala Installation" to
 "Fixed Scala Installation: 2.10.4 (built-in)" 
+
+### Configure Eclipse for Sun Java 7 
+In Ubuntu, after installing the sun JDK with the corresponding task of the fabfile in this directory we have to modify eclipse.ini as indicated [here](https://wiki.eclipse.org/Eclipse.ini) in order to use that JDK. For that we use `-vm`, that needs to occour before `-vmargs`, for example:
+
+```bash
+....
+--launcher.appendVmargs
+-vm 
+/opt/java7/jdk1.7.0_75/bin/java
+-vmargs
+-Dosgi.requiredJavaVersion=1.6
+...
+```
 
 ## Kafka maintenance for development in local mode
 
