@@ -6,7 +6,7 @@ Local devel environment for Spark under XUbuntu 14.10
 TODO: many installations follow the same pattern, this could be abstracted
 '''
 
-from fabric.api import local, task, lcd, env
+from fabric.api import local, task, lcd, env, abort
 import os
 
 _install_root = "/opt"
@@ -28,16 +28,22 @@ def create_public_dir(dir_path, override=False):
     local("sudo mkdir -p " + dir_path)
     local("sudo chmod -R 777 " + dir_path)
 
-def download_and_uncompress(url):
+def download_and_uncompress(url, archive_type='tgz'):
     '''
     Downloads and uncompresses the tgz file at url, in the current directory
     NOTE: Local execution
 
+    :param archive_type: "tgz" or "zip"
     :returns: the name of the file as returned by os.path.basename
     '''
     file_name = os.path.basename(url)
     local("wget " +  url)
-    local("tar xzf " + file_name)
+    if archive_type=='tgz':
+        local("tar xzf " + file_name)
+    elif archive_type == 'zip':
+        local("unzip " + file_name)
+    else:
+        abort("unknown archive_type: " + archive_type)
     return file_name
 
 def get_child_name_with_prefix(dir_prefix): 
@@ -77,6 +83,27 @@ def get_service_dir(service_name):
     with lcd(service_root):
         service_dir = get_child_name_with_prefix(service_name)
     return os.path.join(service_root, service_dir)
+
+def install_simple_service(service_name, service_archive_url, archive_type='tgz'):
+    '''
+    Performs a simple installation of a service by just creating a new folder name service_name at _install_root, downloading the archive file at service_archive_url and uncompressing it. 
+    This can be used as a first method, to later modify the configuration of the service, or adding entries to bashrc, for example
+    NOTE: Local execution
+
+   :param archive_type: "tgz" or "zip"
+   :returns: a dictionary with the entries: 
+        - service_path: path to the directory where the service is installed, so <service_path>/bin is usually the path with the binaries. 
+        - service_root: absolute path to the root of the service installation. If is usually the parent of <service_path> but without the version info
+    '''
+    service_root = os.path.join(_install_root, service_name)
+    create_public_dir(service_root)
+    with lcd(service_root):
+        archive_file = download_and_uncompress(service_archive_url, archive_type=archive_type)
+        service_dir = get_child_name_with_prefix(service_name)
+        local("sudo rm -f " + archive_file)
+    service_abs_dir = os.path.join(service_root, service_dir)
+    return { "service_path" : service_abs_dir , 
+             "service_root" : service_root}
 
 ######################################
 # Tasks local services operation
@@ -230,6 +257,17 @@ def install_spark(override = True):
     append_to_bashrc("'export SPARK_HOME={path}'".format(path=service_abs_dir))
     append_to_bashrc("'PATH=${SPARK_HOME}/bin:$PATH'")
 
+_confluent_quickstart_url = "http://packages.confluent.io/archive/1.0/confluent-1.0-2.10.4.zip"
+@task
+def install_confluent_quickstart(): 
+    '''
+    Installs locally the confluent_quickstart following http://confluent.io/docs/current/quickstart.html
+
+    This might well replace the Kafka and / or zookeeper installation, but for now I prefer depending as less as possible from particular distributions. Also Spark KafkaUtils work only with a particular version of Kafka
+    '''
+    print_title("Installing Confluent Quickstart in local mode")
+    install_simple_service("confluent", _confluent_quickstart_url, archive_type='zip')
+
 @task
 def install_devenv():
     '''
@@ -241,6 +279,7 @@ def install_devenv():
     install_zookeeper()
     install_kafka()
     install_spark()
+    install_confluent_quickstart()
 
     add_final_msg("use setup_local_services.sh to start and stop the local versions of the services")
     print_final_msgs()
