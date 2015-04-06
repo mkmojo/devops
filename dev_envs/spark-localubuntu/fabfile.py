@@ -136,6 +136,31 @@ def kafka_create_topic(topic):
     service_abs_dir = get_service_dir("kafka")
     local(os.path.join(service_abs_dir, "bin", "kafka-topics.sh") + " --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic " + topic)
 
+@task
+def kafka_local_avro_consumer(topic):
+    '''
+    Launches the Kafka avro consumer console
+
+    NOTE: Local execution
+    '''
+    service_abs_dir = get_service_dir("confluent")
+    local(os.path.join(service_abs_dir, "bin", "kafka-avro-console-consumer") + " --zookeeper localhost:2181 --topic {topic} --from-beginning ".format(topic = topic))
+
+
+@task
+def kafka_local_producer(topic, schema):
+    '''
+    Launches the Kafka avro producer console
+
+    Example: 
+        fab kafka_local_producer:topic=test-avro,schema='{"type":"record"\,"name":"myrecord"\,"fields":[{"name":"f1"\,"type":"string"}]}'
+
+    NOTE: Local execution
+    '''
+    print "example line:", '{"f1":"value"}'
+    service_abs_dir = get_service_dir("confluent")
+    local(os.path.join(service_abs_dir, "bin", "kafka-avro-console-producer") + " --broker-list localhost:9092 --topic {topic}  --property value.schema='{schema}'".format(topic = topic, schema = schema))
+
 ###################
 # Tasks install 
 ###################
