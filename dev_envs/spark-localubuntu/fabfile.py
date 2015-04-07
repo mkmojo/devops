@@ -292,6 +292,25 @@ def install_confluent_quickstart():
     print_title("Installing Confluent Quickstart in local mode")
     install_simple_service("confluent", _confluent_quickstart_url, archive_type='zip')
 
+_sbt_url = "https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.8/sbt-launch.jar?_ga=1.141836786.1544579142.1428429429"
+@task
+def install_sbt():
+    '''
+    Installs sbt
+
+    NOTE: Local execution
+    '''
+    program_root = os.path.join(_install_root, "sbt", "bin")
+    create_public_dir(program_root)
+    with lcd(program_root):
+        local("wget " + _sbt_url)
+        sbt_original_jar = local("ls | grep ^sbt-launch.jar" , capture = True)
+        local("mv " + sbt_original_jar + " sbt-launch.jar")
+        local("touch sbt")
+        local("chmod +x sbt")
+        local('''echo 'SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256M"' >> sbt''')
+        local('''echo 'java $SBT_OPTS -jar `dirname $0`/sbt-launch.jar "$@"' >> sbt''')
+
 @task
 def install_devenv():
     '''
@@ -304,6 +323,8 @@ def install_devenv():
     install_kafka()
     install_spark()
     install_confluent_quickstart()
+    install_sbt()
 
     add_final_msg("use setup_local_services.sh to start and stop the local versions of the services")
+    add_final_msg("source ~/.bashrc or open a new terminarl to refresh the PATH and other environment variables")
     print_final_msgs()
