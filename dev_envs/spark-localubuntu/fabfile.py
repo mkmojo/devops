@@ -209,7 +209,6 @@ def install_java7():
         local("echo sudo update-alternatives --install /usr/bin/java java {java_binary} 1".format(java_binary=java_binary))
         local("echo sudo update-alternatives --set java {java_binary}".format(java_binary=java_binary))
         local("sudo rm -f " + java_tgz_file)
-    local('java -version')
 
 _zookeeper_url = "http://ftp.cixug.es/apache/zookeeper/stable/zookeeper-3.4.6.tar.gz"
 @task 
