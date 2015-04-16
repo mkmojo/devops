@@ -311,6 +311,17 @@ def install_sbt():
         local('''echo 'SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256M"' >> sbt''')
         local('''echo 'java $SBT_OPTS -jar `dirname $0`/sbt-launch.jar "$@"' >> sbt''')
 
+_sbt_global_plugin_file = os.path.join(os.environ["HOME"], ".sbt", "0.13", "plugins", "plugins.sbt")
+@task
+def install_sbt_eclipse_plugin(): 
+    '''
+    Installs globally the sbt plugin for eclipse in the local machine, following https://github.com/typesafehub/sbteclipse/wiki/Installing-sbteclipse
+    '''
+    local("mkdir -p " + os.path.dirname(_sbt_global_plugin_file))
+    local("touch " + _sbt_global_plugin_file)
+    # note blank lines between settings are required
+    local("echo '' >> " + _sbt_global_plugin_file)
+    local('''echo  'addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.5.0")'  >> ''' + _sbt_global_plugin_file)
 @task
 def install_devenv():
     '''
@@ -324,6 +335,7 @@ def install_devenv():
     install_spark()
     install_confluent_quickstart()
     install_sbt()
+    install_sbt_eclipse_plugin()
 
     add_final_msg("use setup_local_services.sh to start and stop the local versions of the services")
     add_final_msg("source ~/.bashrc or open a new terminarl to refresh the PATH and other environment variables")
