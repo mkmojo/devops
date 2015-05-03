@@ -6,11 +6,14 @@ Local devel environment for Spark under XUbuntu 14.10
 TODO: many installations follow the same pattern, this could be abstracted
 '''
 
-from fabric.api import local, task, lcd, env, abort
+from fabric.api import local, task, lcd, env, abort, warn_only
 import os
 
 _install_root = "/opt"
 _bashrc = os.path.join(os.environ["HOME"], ".bashrc")
+
+_default_spark_version = "1.3.1"
+_default_hadoop_version = "2.4.0"
 
 # Store here string messages to show at the end of the execution
 env.final_msgs = []
@@ -52,7 +55,12 @@ def get_child_name_with_prefix(dir_prefix):
 
     :retuns: the name of the child directory of the current directory 
     '''
-    dir_name = local("ls -d */ | grep ^" + dir_prefix, capture = True)[:-1]
+    with warn_only(): 
+        dir_name = local("ls -d */ | grep ^" + dir_prefix, capture = True)
+        if dir_name.failed:
+            # try with a less strict pattern
+            dir_name = local("ls -d */ | grep " + dir_prefix, capture = True)
+        dir_name = dir_name[:-1]
     return dir_name
 
 def append_to_bashrc(line):
@@ -260,8 +268,7 @@ def install_kafka():
     add_final_msg("Kafka logs are stored at /tmp/kafka-logs")
     print_final_msgs() # FIXME delete
 
-# spark_url = "http://apache.rediris.es/spark/spark-1.3.0/spark-1.3.0-bin-hadoop2.4.tgz"
-spark_url ="http://ftp.cixug.es/apache/spark/spark-1.3.0/spark-1.3.0-bin-hadoop2.4.tgz"
+spark_url = "http://ftp.cixug.es/apache/spark/spark-1.3.1/spark-1.3.1-bin-hadoop2.4.tgz"
 @task
 def install_spark(override = True):
     '''
@@ -322,6 +329,24 @@ def install_sbt_eclipse_plugin():
     # note blank lines between settings are required
     local("echo '' >> " + _sbt_global_plugin_file)
     local('''echo  'addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.5.0")'  >> ''' + _sbt_global_plugin_file)
+
+_zeppelin_root = os.path.join(_install_root, "zeppelin")
+_zeppelin_url = "https://github.com/apache/incubator-zeppelin/archive/master.zip"
+@task
+def install_apache_zeppelin():
+    '''
+    Installs Apache Zeppelin locally
+
+    Following https://zeppelin.incubator.apache.org/docs/install/install.html
+    '''
+    _zeppelin_path = install_simple_service("zeppelin", _zeppelin_url, "zip")["service_path"]
+    print "_zeppelin_path:", _zeppelin_path
+    # with lcd(_zeppelin_path):
+
+
+# _zeppelin_path: /opt/zeppelin/incubator-zeppelin-master
+
+
 @task
 def install_devenv():
     '''
