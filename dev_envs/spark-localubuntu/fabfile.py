@@ -175,7 +175,7 @@ def start_zeppelin():
     Starts Apache Zeppelin locally
     '''
     with lcd(_zeppelin_bin_path):
-        local("zeppelin-daemon.sh start")
+        local("./zeppelin-daemon.sh start")
 
 @task
 def stop_zeppelin():
@@ -183,7 +183,7 @@ def stop_zeppelin():
     Stops Apache Zeppelin locally
     '''
     with lcd(_zeppelin_bin_path):
-        local("zeppelin-daemon.sh stop")
+        local("./zeppelin-daemon.sh stop")
 
 ###################
 # Tasks install 
