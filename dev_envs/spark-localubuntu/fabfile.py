@@ -169,6 +169,22 @@ def kafka_local_producer(topic, schema):
     service_abs_dir = get_service_dir("confluent")
     local(os.path.join(service_abs_dir, "bin", "kafka-avro-console-producer") + " --broker-list localhost:9092 --topic {topic}  --property value.schema='{schema}'".format(topic = topic, schema = schema))
 
+@task
+def start_zeppelin():
+    '''
+    Starts Apache Zeppelin locally
+    '''
+    with lcd(_zeppelin_bin_path):
+        local("zeppelin-daemon.sh start")
+
+@task
+def stop_zeppelin():
+    '''
+    Stops Apache Zeppelin locally
+    '''
+    with lcd(_zeppelin_bin_path):
+        local("zeppelin-daemon.sh stop")
+
 ###################
 # Tasks install 
 ###################
@@ -332,20 +348,17 @@ def install_sbt_eclipse_plugin():
 
 _zeppelin_root = os.path.join(_install_root, "zeppelin")
 _zeppelin_url = "https://github.com/apache/incubator-zeppelin/archive/master.zip"
+_zeppelin_bin_path = os.path.join(_zeppelin_root, "incubator-zeppelin-master", "bin")
 @task
-def install_apache_zeppelin():
+def install_apache_zeppelin(spark_version = _default_spark_version, hadoop_version = _default_hadoop_version):
     '''
     Installs Apache Zeppelin locally
 
     Following https://zeppelin.incubator.apache.org/docs/install/install.html
     '''
     _zeppelin_path = install_simple_service("zeppelin", _zeppelin_url, "zip")["service_path"]
-    print "_zeppelin_path:", _zeppelin_path
-    # with lcd(_zeppelin_path):
-
-
-# _zeppelin_path: /opt/zeppelin/incubator-zeppelin-master
-
+    with lcd(_zeppelin_path):
+        local("mvn install -DskipTests -Dspark.version={spark_version}  -Dhadoop.version={hadoop_version}".format(spark_version=spark_version, hadoop_version=hadoop_version))
 
 @task
 def install_devenv():
