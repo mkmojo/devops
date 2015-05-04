@@ -359,6 +359,8 @@ def install_apache_zeppelin(spark_version = _default_spark_version, hadoop_versi
     _zeppelin_path = install_simple_service("zeppelin", _zeppelin_url, "zip")["service_path"]
     with lcd(_zeppelin_path):
         local("mvn install -DskipTests -Dspark.version={spark_version}  -Dhadoop.version={hadoop_version}".format(spark_version=spark_version, hadoop_version=hadoop_version))
+        local("cp conf/zeppelin-site.xml.template conf/zeppelin-site.xml")
+    print "Currently there is a bug in the Zeppelin distribution, and the installation doesn't work, see https://github.com/juanrh/juanrh.github.io/wiki/About-Apache-Zeppelin"
 
 @task
 def install_devenv():
