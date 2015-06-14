@@ -156,12 +156,12 @@ def kafka_local_avro_consumer(topic):
 
 
 @task
-def kafka_local_producer(topic, schema):
+def kafka_local_producer_w_schema(topic, schema):
     '''
     Launches the Kafka avro producer console
 
     Example: 
-        fab kafka_local_producer:topic=test-avro,schema='{"type":"record"\,"name":"myrecord"\,"fields":[{"name":"f1"\,"type":"string"}]}'
+        fab kafka_local_producer_w_schema:topic=test-avro,schema='{"type":"record"\,"name":"myrecord"\,"fields":[{"name":"f1"\,"type":"string"}]}'
 
     NOTE: Local execution
     '''
