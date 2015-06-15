@@ -156,7 +156,7 @@ def kafka_local_avro_consumer(topic):
 
 
 @task
-def kafka_local_producer_w_schema(topic, schema):
+def kafka_local_avro_producer(topic, schema):
     '''
     Launches the Kafka avro producer console
 
