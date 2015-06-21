@@ -16,9 +16,7 @@ then we add git to the PATH by adding the following code to ~/.bashrc (creating 
 export PATH=/usr/local/git/bin/:${PATH}
 ```
 
- * **Docker**: install `boot2docker` for MacOS following the [official instructions](https://docs.docker.com/installation/mac/)
-
-    - note after `boot2docker init` we have to run `eval "$(boot2docker shellinit)"` before any other command, in other to have `DOCKER_HOST` and other variables regarding the VirtualBox instance that is actually running the Docker server 
+ * **Docker**: install `boot2docker` for MacOS following the [official instructions](https://docs.docker.com/installation/mac/). See [Docker cheatshee](https://github.com/juanrh/juanrh.github.io/wiki/Docker-cheatsheet) for details and workarounds for the bugs in the MacOS version of Docker
 
 * **Eclipse**: using Eclipse Kepler for Java
     - follow [this instructions](https://wiki.eclipse.org/Updating_eclipse.ini_on_MacOS) to access `eclipse.ini` (note `Eclipse.app` is seen as a directory from the terminal), to set `-Xmx1500m` for the Scala plugin
